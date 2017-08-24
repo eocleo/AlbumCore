@@ -9,31 +9,28 @@
 import UIKit
 import Photos
 
-typealias AlbumNavItemBlock = () -> Void
+typealias AlbumNavItemBlock = (_ album: AlbumListController, _ selectedFiles: [AlbumFile]) -> Void
 
 private let reuseIdentifier = "AlbumHomeCell"
 
 //相册列表，包含智能相册，用户相册，可自定义显示哪些
 class AlbumListController: UICollectionViewController {
 
-    //右侧取消按钮
-    var rightCancelBlock: AlbumNavItemBlock? {
+    //右侧完成按钮
+    var rightNavBlock: AlbumNavItemBlock? {
         didSet {
-            let button = self.createNavButton(image: nil, title: "取消")
-            button.contentHorizontalAlignment = .right
-            button.addTarget(self, action: #selector(cancelAction(_:)), for: .touchUpInside)
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(customView: button)
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(customView: self.rightCountNavButton)
         }
     }
     
-    @objc fileprivate func cancelAction(_ button: UIButton) {
-        self.rightCancelBlock?()
+    @objc fileprivate func rightNavAction(_ button: UIButton) {
+        self.rightNavBlock?(self, self.viewModel.selectedFiles)
     }
     
     // MARK: - 数据源,viewModel
-    var viewModel = AlbumListViewModel()
+    fileprivate var viewModel = AlbumListViewModel()
     
-    func refreshData() {
+    fileprivate func refreshData() {
         self.viewModel.refreshData { [weak self] in
             DispatchQueue.main.async {
                 self?.collectionView?.reloadData()
@@ -42,7 +39,7 @@ class AlbumListController: UICollectionViewController {
     }
 
     // MARK: - 遮罩
-    var hasAuthorized: Bool = true {
+    fileprivate var hasAuthorized: Bool = true {
         didSet {
             if hasAuthorized {
                 self.overlayerRightsView?.dismiss()
@@ -54,18 +51,26 @@ class AlbumListController: UICollectionViewController {
         }
     }
     
-    var overlayerView: OverlayerView?
+    fileprivate lazy var rightCountNavButton: UIButton = {
+        let button = self.createNavButton(image: nil, title: "完成")
+        button.contentHorizontalAlignment = .right
+        button.setTitleColor(UIColor.blue, for: .normal)
+        button.addTarget(self, action: #selector(rightNavAction(_:)), for: .touchUpInside)
+        return button
+    }()
     
-    var overlayerRightsView: LimitRightsOverlayerView? = LimitRightsOverlayerView.createWith(image: UIImage.init(named: "相册权限"))
-    var overlayerDataView: NoDataOverlayerView? = NoDataOverlayerView.createWith(image: UIImage.init(named: "noPic"), message: "没有相册")
+    fileprivate var overlayerView: OverlayerView?
     
-    func showAccessDenied() {
+    fileprivate var overlayerRightsView: LimitRightsOverlayerView? = LimitRightsOverlayerView.createWith(image: UIImage.init(named: "相册权限"))
+    fileprivate var overlayerDataView: NoDataOverlayerView? = NoDataOverlayerView.createWith(image: UIImage.init(named: "noPic"), message: "没有相册")
+    
+    fileprivate func showAccessDenied() {
         self.hasAuthorized = false
         self.refreshData()
     }
     
     // MARK: - 权限 与 数据 刷新
-    func checkAutorizationAndLoadData() {
+    fileprivate func checkAutorizationAndLoadData() {
         let status = PHPhotoLibrary.authorizationStatus()
         if status == .authorized {
             self.refreshData()
@@ -76,7 +81,7 @@ class AlbumListController: UICollectionViewController {
         }
     }
     
-    func requestAuthorizationStatus() {
+    fileprivate func requestAuthorizationStatus() {
         PHPhotoLibrary.requestAuthorization { (status) in
             if (status == .authorized) {
                 self.refreshData()
@@ -112,13 +117,13 @@ class AlbumListController: UICollectionViewController {
     }()
     
     // MARK: - 相册详情页面
-    lazy var detailController: AlbumDetailController = {
+    fileprivate  lazy var detailController: AlbumDetailController = {
         var controller = AlbumDetailController.init(collectionViewLayout: UICollectionViewFlowLayout())
 //        controller.footerViewFly = true
         return controller
     }()
 
-    func showDetailController(with myCollection: AlbumCollection) -> Void {
+    fileprivate func showDetailController(with myCollection: AlbumCollection) -> Void {
         collectionView?.isUserInteractionEnabled = false
         
         detailController.title = myCollection.name
@@ -135,7 +140,7 @@ class AlbumListController: UICollectionViewController {
             return false
         }
         
-        detailController.newDidSelectBlock = { [weak self] (file) -> Bool in
+        detailController.didSelectBlock = { [weak self] (file) -> Bool in
             var hasSelected = false
             if  let file = self?.viewModel.selectedItems[file.fileIdentifier!] {
                 if let identitier = file.fileIdentifier {

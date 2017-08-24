@@ -108,7 +108,7 @@
 		470930C81F4D2DEA00ACE061 /* views */ = {
 			isa = PBXGroup;
 			children = (
-				470930EF1F4D673900ACE061 /* OverLayerViews */,
+				470930EF1F4D673900ACE061 /* overlayerviews */,
 				470930E51F4D5C1300ACE061 /* AlbumDetailCollectionViewCell.swift */,
 				470930E61F4D5C1300ACE061 /* AlbumDetailCollectionViewCell.xib */,
 				470930E71F4D5C1300ACE061 /* AlbumHomeCell.swift */,
@@ -119,7 +119,7 @@
 			path = views;
 			sourceTree = "<group>";
 		};
-		470930EF1F4D673900ACE061 /* OverLayerViews */ = {
+		470930EF1F4D673900ACE061 /* overlayerviews */ = {
 			isa = PBXGroup;
 			children = (
 				470930D71F4D5A3900ACE061 /* OverlayerView.swift */,
@@ -128,7 +128,7 @@
 				470930DA1F4D5A3900ACE061 /* LimitRightsOverlayerView.swift */,
 				470930DB1F4D5A3900ACE061 /* LimitRightsOverlayerView.xib */,
 			);
-			name = OverLayerViews;
+			name = overlayerviews;
 			sourceTree = "<group>";
 		};
 		470930F01F4D6CDD00ACE061 /* AlbumCore */ = {

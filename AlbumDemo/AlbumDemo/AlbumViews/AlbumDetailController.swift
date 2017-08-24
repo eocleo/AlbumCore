@@ -22,8 +22,7 @@ class AlbumDetailController: UICollectionViewController {
     // MARK: - 回调block
     var willDisppear:(() -> Void)?
     var needDisableSelectMore: (() -> Bool)?
-    var newDidSelectBlock: ((_ albumFile: AlbumFile) -> Bool)?
-    var didSelectBlock: ((_ asset: PHAsset, _ filePath: String, _ isDelete: Bool) -> Bool)?
+    var didSelectBlock: ((_ albumFile: AlbumFile) -> Bool)?
     var hasSelectedAsset: ((_ asset: PHAsset?) -> Bool)?
     
     //由父页面传入，可以为空
@@ -83,12 +82,20 @@ class AlbumDetailController: UICollectionViewController {
     fileprivate func alertNeedLoadICloudSouce(_ complete:((_ needDownLoad: Bool) -> Void)?) -> Void {
         runInMain {
             // MARK: - todo
-            AlbumDebug("当前文件来自icloud，加载可能需要较长时间")
-            complete?(true)
-//            UIAlertController.showAlert(in: self, withTitle: nil, message: "当前文件来自icloud，加载可能需要较长时间", cancelButtonTitle: "取消", destructiveButtonTitle: nil, otherButtonTitles: ["确定"]) { (controller, action, index) in
-//                complete?((index != controller.cancelButtonIndex))
-//                controller.dismiss(animated: true, completion: nil)
-//            }
+            let alertController = UIAlertController.init(title: nil, message: "当前文件来自icloud，加载可能需要较长时间", preferredStyle: .alert)
+            alertController.addAction(UIAlertAction.init(title: "取消", style: .default, handler: { [weak alertController] (action) in
+                alertController?.dismiss(animated: true, completion: nil)
+                complete?(false)
+            }))
+            
+            alertController.addAction(UIAlertAction.init(title: "确定", style: .default, handler: { [weak alertController] (action) in
+                alertController?.dismiss(animated: true, completion: nil)
+                complete?(true)
+            }))
+
+            runInMain {
+                self.present(alertController, animated: true, completion: nil)
+            }
         }
     }
 
@@ -132,7 +139,7 @@ class AlbumDetailController: UICollectionViewController {
             file.fileSize = size
             file.fileIdentifier = identifier
             
-            let isSelected = self?.newDidSelectBlock?(file) ?? false
+            let isSelected = self?.didSelectBlock?(file) ?? false
             if let cell = self?.collectionView?.cellForItem(at: index) as? AlbumDetailCollectionViewCell {
                 runInMain {
                     cell.selectButton.isSelected = isSelected

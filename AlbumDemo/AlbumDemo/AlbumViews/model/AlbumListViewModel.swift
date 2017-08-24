@@ -11,6 +11,16 @@ import Photos
 
 class AlbumListViewModel: NSObject {
 
+    var selectedFiles: [AlbumFile] {
+        get {
+            var array: [AlbumFile] = Array()
+            for item in self.selectedItems {
+                array.append(item.value)
+            }
+            return array
+        }
+    }
+    
     var selectedItems: Dictionary<String, AlbumFile> = Dictionary.init()
     var maxSelectCount = 20
     var disableSelectedMore = false

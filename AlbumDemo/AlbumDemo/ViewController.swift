@@ -71,7 +71,7 @@ extension ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         NSLog("didSelectRowAt:\(indexPath.row),\(indexPath.section)")
         let albumListController = AlbumListController.init(collectionViewLayout: UICollectionViewFlowLayout.init())
-        albumListController.rightCancelBlock = { [weak albumListController] in
+        albumListController.rightNavBlock = { [weak albumListController] (albumController, selectedFiles) in
             albumListController?.navigationController?.popViewController(animated: true)
         }
         DispatchQueue.main.async {
