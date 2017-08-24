@@ -17,4 +17,4 @@
 ### 可用，待完善
 iCloud相册中内容获取，有一些小问题，后续补上
 
-![演示](www.baidu.com)
+![演示](https://github.com/eocleo/AlbumCore/blob/master/演示.mp4)
