@@ -2,8 +2,6 @@
 
 - Welcome to the AlbumCore wiki!
 
-- 关键字： swift Photos 相册 Album
-
 ### 简介
 
 基于iOS8.0以上，封装Photos，简易使用Demo，上手快，简单通俗易懂
