@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="Y8u-Ae-q4e" customClass="NoDataOverlayerView" customModule="FileMail" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="noMail" translatesAutoresizingMaskIntoConstraints="NO" id="aDh-dj-Oqg">
+                    <rect key="frame" x="107" y="162.5" width="160" height="120"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="120" id="V5S-dc-FEb"/>
+                        <constraint firstAttribute="width" constant="160" id="g4r-xU-eom"/>
+                    </constraints>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="您还没有传输过任何文件" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aSE-5V-rky">
+                    <rect key="frame" x="97" y="290.5" width="180" height="20"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <color key="textColor" red="0.77208477259999997" green="0.78403961659999999" blue="0.80475145579999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" red="0.95686274509803915" green="0.96470588235294119" blue="0.97647058823529409" alpha="0.0" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstItem="aSE-5V-rky" firstAttribute="top" secondItem="aDh-dj-Oqg" secondAttribute="bottom" constant="8" id="44O-O9-p4f"/>
+                <constraint firstItem="aDh-dj-Oqg" firstAttribute="centerY" secondItem="Y8u-Ae-q4e" secondAttribute="centerY" multiplier="2:3" id="dUj-RK-IgL"/>
+                <constraint firstItem="aSE-5V-rky" firstAttribute="centerX" secondItem="aDh-dj-Oqg" secondAttribute="centerX" id="uGu-W5-OnC"/>
+                <constraint firstItem="aDh-dj-Oqg" firstAttribute="centerX" secondItem="Y8u-Ae-q4e" secondAttribute="centerX" id="vHy-l7-umY"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="descriptionLabel" destination="aSE-5V-rky" id="jwm-d3-aYO"/>
+                <outlet property="imageView" destination="aDh-dj-Oqg" id="4ui-4l-TuY"/>
+            </connections>
+        </view>
+    </objects>
+    <resources>
+        <image name="noMail" width="160" height="120"/>
+    </resources>
+</document>
