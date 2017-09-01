@@ -16,11 +16,13 @@ class AlbumDetailController: UICollectionViewController {
 
     var collection: AlbumCollection? {
         didSet {
-            self.reloadData()
+            self.collection?.registerFetchResultChange(self)
+            self.reloadData { [weak self] in
+                self?.scrollToBottom()
+            }
         }
     }
     // MARK: - 回调block
-    var willDisppear:(() -> Void)?
     var needDisableSelectMore: (() -> Bool)?
     var didSelectBlock: ((_ albumFile: AlbumFile) -> Bool)?
     var hasSelectedAsset: ((_ asset: PHAsset?) -> Bool)?
@@ -34,6 +36,11 @@ class AlbumDetailController: UICollectionViewController {
                 self.view.addSubview(footerView!)
             }
         }
+    }
+    
+    // MARK: - 刷新选中个数
+    func refreshSelectedCount(_ animation: Bool) -> Void {
+
     }
 
     fileprivate var allAsset: PHFetchResult<PHAsset>? {
@@ -50,7 +57,7 @@ class AlbumDetailController: UICollectionViewController {
     }()
     
 
-    fileprivate func reloadData() -> Void {
+    fileprivate func reloadData(_ complete: (() -> Void)?) -> Void {
         self.collection?.fetchAssets( block: { [weak self] (asset) in
             guard self != nil else {
                 return
@@ -62,7 +69,7 @@ class AlbumDetailController: UICollectionViewController {
                 }
                 self?.title = self?.title
                 self?.collectionView?.reloadData()
-                self?.scrollToBottom()
+                complete?()
             }
         })
     }
@@ -147,6 +154,7 @@ class AlbumDetailController: UICollectionViewController {
             }
             runInMain {
                 self?.updateVisibleCellState()
+                self?.refreshSelectedCount(true)
             }
             complete(isSelected)
         })
@@ -178,8 +186,14 @@ class AlbumDetailController: UICollectionViewController {
         self.collectionView!.register(cellNib, forCellWithReuseIdentifier: reuseIdentifier)
         self.collectionView?.backgroundColor = UIColor.white
         self.collectionView?.backgroundView = self.blankView
+        self.view.backgroundColor = .white
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.refreshSelectedCount(false)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -266,5 +280,42 @@ extension AlbumDetailController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 5.0
+    }
+    
+}
+
+extension AlbumDetailController: FetchResultChangeDetailObserver {
+    private func photolibraryChange(withDetail: PHFetchResultChangeDetails<PHAsset>?) -> Void {
+        guard let detail = withDetail else {
+            return
+        }
+        AlbumDebug("\(detail)")
+        self.collection?.fetchAssets(block: { [weak self] (results) in
+            if detail.hasIncrementalChanges {
+                
+                func indexPathsFor(_ indexSet: IndexSet?) -> [IndexPath] {
+                    var indexPaths: [IndexPath] = []
+                    if let set = indexSet {
+                        for index in set {
+                            indexPaths.append(IndexPath.init(row: index, section: 0))
+                        }
+                    }
+                    return indexPaths
+                }
+                runInMain {
+                    self?.collectionView?.insertItems(at: indexPathsFor(detail.insertedIndexes))
+                    self?.collectionView?.deleteItems(at: indexPathsFor(detail.removedIndexes))
+                    self?.collectionView?.reloadItems(at: indexPathsFor(detail.changedIndexes))
+                }
+            } else {
+                self?.collectionView?.reloadData()
+            }
+        })
+    }
+
+    func didReceiveChange(_ detail: PHFetchResultChangeDetails<PHAsset>?, collection: AlbumCollection) {
+        if collection.isEqual(self.collection) {
+            self.photolibraryChange(withDetail: detail)
+        }
     }
 }

@@ -9,6 +9,14 @@
 import UIKit
 import Photos
 
+protocol CollectionChangeDetailObserver {
+    func didReceiveChange(_ detail: PHObjectChangeDetails<PHAssetCollection>?, collection: AlbumCollection) -> Void
+}
+
+protocol FetchResultChangeDetailObserver {
+    func didReceiveChange(_ detail: PHFetchResultChangeDetails<PHAsset>?, collection: AlbumCollection) -> Void
+}
+
 class AlbumCollection: NSObject {
     var collection: PHAssetCollection
 
@@ -69,11 +77,58 @@ class AlbumCollection: NSObject {
         self.collection = collection
         self.name = collection.localizedTitle ?? "相册"
         super.init()
+        PHPhotoLibrary.shared().register(self)
     }
     
     func clearCache() -> Void {
         self.firstImage = nil
+        self.lastImage = nil
         self.assetsResult = nil
+    }
+    
+    // MARK: - PHChange
+    fileprivate var collectionChangeObservers: NSHashTable<AnyObject> = NSHashTable.init(options: NSPointerFunctions.Options.weakMemory)
+    fileprivate var fetchResultChangeObservers: NSHashTable<AnyObject> = NSHashTable.init(options: NSPointerFunctions.Options.weakMemory)
+    
+    //注册变化通知
+    func registerCollectionChange(_ observer: CollectionChangeDetailObserver) -> Void {
+        if self.collectionChangeObservers.contains(observer as AnyObject) {
+            return
+        }
+        self.collectionChangeObservers.add(observer as AnyObject)
+    }
+    
+    func registerFetchResultChange(_ observer: FetchResultChangeDetailObserver) -> Void {
+        if self.fetchResultChangeObservers.contains(observer as AnyObject) {
+            return
+        }
+        self.fetchResultChangeObservers.add(observer as AnyObject)
+    }
+}
+
+extension AlbumCollection: PHPhotoLibraryChangeObserver {
+    
+    func photoLibraryDidChange(_ changeInstance: PHChange) {
+        if let collectionChangeDetail = changeInstance.changeDetails(for: self.collection)  {
+            for observer in self.collectionChangeObservers.allObjects {
+                if let observer = observer as? CollectionChangeDetailObserver {
+                    observer.didReceiveChange(collectionChangeDetail, collection: self)
+                }
+            }
+        }
+        
+        guard let fetchResults = self.assetsResult else {
+            return
+        }
+
+        if let fetchResultChangeDetail = changeInstance.changeDetails(for: fetchResults) {
+            for observer in self.fetchResultChangeObservers.allObjects {
+                if let observer = observer as? FetchResultChangeDetailObserver {
+                    self.assetsResult = fetchResultChangeDetail.fetchResultAfterChanges
+                    observer.didReceiveChange(fetchResultChangeDetail, collection: self)
+                }
+            }
+        }
     }
 }
 

@@ -32,12 +32,20 @@ class AlbumListController: UICollectionViewController {
     
     fileprivate func refreshData() {
         self.viewModel.refreshData { [weak self] in
+            self?.setupAlbumChangeNotifiy()
+            self?.setupCollectionView()
             DispatchQueue.main.async {
                 self?.collectionView?.reloadData()
             }
         }
     }
-
+    
+    fileprivate func setupAlbumChangeNotifiy() -> Void {
+        for collection in self.viewModel.albumList {
+            collection.registerFetchResultChange(self)
+        }
+    }
+    
     // MARK: - 遮罩
     fileprivate var hasAuthorized: Bool = true {
         didSet {
@@ -98,13 +106,28 @@ class AlbumListController: UICollectionViewController {
         self.title = "自定义相册"
         self.setupCollectionView()
         self.checkAutorizationAndLoadData()
+//        PHPhotoLibrary.shared().register(self)
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.refreshSelectedCount(false)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
+    // MARK: - 刷新选中个数
+    func refreshSelectedCount(_ animation: Bool) -> Void {
+        var title = "完成"
+        if self.viewModel.selectedItems.count > 0 {
+            title = title.appending("(\(self.viewModel.selectedItems.count))")
+        }
+        self.rightCountNavButton.setTitle(title, for: .normal)
+    }
+
     fileprivate func setupCollectionView() -> Void {
         let cellNib: UINib = UINib.init(nibName: reuseIdentifier, bundle: Bundle.main)
         self.collectionView!.register(cellNib, forCellWithReuseIdentifier: reuseIdentifier)
@@ -119,7 +142,6 @@ class AlbumListController: UICollectionViewController {
     // MARK: - 相册详情页面
     fileprivate  lazy var detailController: AlbumDetailController = {
         var controller = AlbumDetailController.init(collectionViewLayout: UICollectionViewFlowLayout())
-//        controller.footerViewFly = true
         return controller
     }()
 
@@ -161,13 +183,10 @@ class AlbumListController: UICollectionViewController {
                     hasSelected =  false
                 }
             }
+            self?.refreshSelectedCount(true)
             return hasSelected
         }
-        
-        detailController.willDisppear = { [weak self] in
-            self?.viewModel.selectedItems.removeAll()
-        }
-        
+                
         detailController.needDisableSelectMore = { [weak self] () in
             return self?.viewModel.disableSelectedMore ?? false
         }
@@ -177,7 +196,6 @@ class AlbumListController: UICollectionViewController {
     }
 
     // MARK: - CollectionView Datasouce
-    
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
@@ -251,5 +269,39 @@ extension AlbumListController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 20.0
     }
-    
 }
+
+extension AlbumListController: FetchResultChangeDetailObserver {
+    func didReceiveChange(_ detail: PHFetchResultChangeDetails<PHAsset>?, collection: AlbumCollection) {
+        func updateWithChange(_ detail: PHFetchResultChangeDetails<PHAsset>, collection: AlbumCollection, index: Int) -> Void {
+            func ifNeedUpdate<T>(_ withDetail: PHFetchResultChangeDetails<T>?) -> Bool {
+                if let detail = withDetail {
+                    if detail.hasIncrementalChanges == true {
+                        return true
+                    } else if detail.changedObjects.count > 0 ||
+                        detail.removedObjects.count > 0 ||
+                        detail.insertedObjects.count > 0{
+                        return true
+                    }
+                }
+                return false
+            }
+            
+            if ifNeedUpdate(detail) {
+                let indexPath = IndexPath.init(row: index, section: 0)
+                collection.clearCache()
+                collection.fetchAssets(block: { [weak self] (result) in
+                    runInMain {
+                        self?.collectionView?.reloadItems(at: [indexPath])
+                    }
+                })
+            }
+        }
+        
+        if let index = self.viewModel.albumList.index(of: collection), let detail = detail {
+            updateWithChange(detail, collection: collection, index: index)
+        }
+    }
+}
+
+
