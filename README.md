@@ -16,6 +16,13 @@
 
 请直接下载demo运行，say is hard，code is easy！
 
+pods 方式引用
+```
+  pod 'AlbumCore', '~> 0.0.3'
+```
+- 注意
+> 引用的是核心库，界面可以参考demo来实现，或者直接在demo提供的AlbumListController（相册列表），AlbumDetailController（相册详情）基础上修改
+
 ### 已实现
 
 系统相册浏览，获取图片，视频，获取大小，文件名，URL
