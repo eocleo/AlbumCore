@@ -38,22 +38,7 @@ extension PHAssetCollection {
     
     func fetchAssets(options: PHFetchOptions?, block: @escaping ((_ result: PHFetchResult<PHAsset>) -> Swift.Void)) -> Void {
         block(PHAsset.fetchAssets(in: self, options: options))
-    }
-    
-    //获取第一张图片
-    func getFirstImage(size: CGSize, block: @escaping ((_ imageInfo:Dictionary<String, Any>) -> Void)) -> Void {
-        let assetResult:PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: self, options: nil)
-        
-        if let asset:PHAsset = assetResult.firstObject {
-            let options:PHImageRequestOptions = PHImageRequestOptions.init()
-            options.resizeMode = .fast
-            options.deliveryMode = .fastFormat
-            options.isNetworkAccessAllowed = true
-            asset.requestImage(options: options, size: size, block: block)
-        } else {
-            block([:])
-        }
-    }
+    }    
 }
 
 extension PHAsset {

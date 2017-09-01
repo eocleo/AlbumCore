@@ -112,7 +112,7 @@ class AlbumListController: UICollectionViewController {
         self.collectionView!.backgroundColor = UIColor.white
     }
     
-    fileprivate lazy var defaultAlbumFirstImage = {
+    fileprivate lazy var defaultAlbumImage = {
         return UIImage.imageWith(color: .cellLine, size: CGSize.init(width: 120, height: 120))
     }()
     
@@ -195,37 +195,30 @@ class AlbumListController: UICollectionViewController {
         let cell: AlbumHomeCell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! AlbumHomeCell
         
         // Configure the cell
-        
         let myCollection = viewModel.albumList[indexPath.row]
-        
-        cell.albumImageView.image = myCollection.firstImage
-        if myCollection.firstImage == nil {
-            myCollection.getFistImage(size: cell.albumImageView.bounds.size) { [weak cell, weak self] (image) in
-                runInMain {
-                    cell?.albumImageView.image = image ?? self?.defaultAlbumFirstImage
-                }
-            }
-        }
-        
         cell.titleLabel.text = myCollection.name
-        
-        if myCollection.count == nil {
-            if myCollection.collection.estimatedAssetCount != NSNotFound {
-                cell.countLabel.text = "\(myCollection.collection.estimatedAssetCount)"
-            } else {
-                cell.countLabel.text = "0"
-            }
-            myCollection.fetchAssets(block: { [weak myCollection, weak cell] (result) in
-                runInMain {
-                    cell?.countLabel.text = "\(myCollection?.count ?? 0)"
+        cell.countLabel.text = "\(myCollection.count ?? 0)"
+        return cell
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let cell = cell as? AlbumHomeCell else {
+            return
+        }
+        let myCollection = viewModel.albumList[indexPath.row]
+        cell.albumImageView.image = myCollection.lastImage ?? defaultAlbumImage
+        if myCollection.lastImage == nil {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1, execute: { 
+                myCollection.getLastImage(size: CGSize.init(width: 300, height: 300)) { [weak myCollection, weak self, weak collectionView] (image) in
+                    runInMain {
+                        if let thisCell = collectionView?.cellForItem(at: indexPath) as? AlbumHomeCell {
+                            thisCell.albumImageView.image = image ?? self?.defaultAlbumImage
+                            thisCell.countLabel.text = "\(myCollection?.count ?? 0)"
+                        }
+                    }
                 }
             })
-            
-        } else {
-            cell.countLabel.text = "\(myCollection.count ?? 0)"
         }
-        
-        return cell
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
