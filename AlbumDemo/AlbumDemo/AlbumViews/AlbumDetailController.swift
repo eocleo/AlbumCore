@@ -40,7 +40,6 @@ class AlbumDetailController: UICollectionViewController {
     
     // MARK: - 刷新选中个数
     func refreshSelectedCount(_ animation: Bool) -> Void {
-
     }
 
     fileprivate var allAsset: PHFetchResult<PHAsset>? {
@@ -188,15 +187,29 @@ class AlbumDetailController: UICollectionViewController {
         self.collectionView?.backgroundView = self.blankView
         self.view.backgroundColor = .white
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.setupMainUI()
+        self.refreshSelectedCount(false)
+    }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.refreshSelectedCount(false)
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    private func setupMainUI() -> Void {
+        if self.footerView != nil {
+            self.collectionView?.frame = CGRect.init(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height - 50.0)
+            self.footerView?.frame = CGRect.init(x: 0, y: (self.view?.frame.size.height)! - 50.0, width: (self.collectionView?.frame.size.width)!, height: 50.0)
+        } else {
+            self.collectionView?.frame = CGRect.init(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height)
+        }
     }
     
 

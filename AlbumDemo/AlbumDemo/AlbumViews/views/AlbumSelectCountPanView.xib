@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="AlbumSelectCountPanView" customModule="FileMail" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="M2j-Vi-gHs">
+                    <rect key="frame" x="15" y="15" width="39.5" height="21"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="21" id="Fb1-ra-qJv"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <color key="textColor" red="0.59993284940719604" green="0.60003870725631714" blue="0.5999261736869812" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aaX-D7-zSD">
+                    <rect key="frame" x="278" y="9" width="82" height="32"/>
+                    <color key="backgroundColor" red="0.19800096750000001" green="0.60682195429999997" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="82" id="1ZU-xH-Xcq"/>
+                        <constraint firstAttribute="height" constant="32" id="Nlb-AR-PQU"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <state key="normal" title="下一步">
+                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="doneAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="Rxq-CN-P8o"/>
+                    </connections>
+                </button>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hBb-Dg-2eb">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="1"/>
+                    <color key="backgroundColor" red="0.88627450980392153" green="0.88627450980392153" blue="0.88627450980392153" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="0.5" id="zKJ-G0-7SB"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="hBb-Dg-2eb" secondAttribute="trailing" id="6jh-ng-a9a"/>
+                <constraint firstItem="M2j-Vi-gHs" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="15" id="FWB-kF-7Gz"/>
+                <constraint firstAttribute="trailing" secondItem="aaX-D7-zSD" secondAttribute="trailing" constant="15" id="QBS-cL-Sne"/>
+                <constraint firstItem="M2j-Vi-gHs" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="aAd-Je-SpW"/>
+                <constraint firstItem="hBb-Dg-2eb" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="nDA-tT-NSy"/>
+                <constraint firstItem="hBb-Dg-2eb" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="nM0-aY-kQd"/>
+                <constraint firstItem="aaX-D7-zSD" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="yto-1t-PAj"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="countLabel" destination="M2j-Vi-gHs" id="gnk-ni-zVz"/>
+                <outlet property="doneButton" destination="aaX-D7-zSD" id="Mhk-LC-m2B"/>
+            </connections>
+            <point key="canvasLocation" x="171" y="11"/>
+        </view>
+    </objects>
+</document>

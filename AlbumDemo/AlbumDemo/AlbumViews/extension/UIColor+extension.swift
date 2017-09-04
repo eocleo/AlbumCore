@@ -11,6 +11,8 @@ import UIKit
 extension UIColor {
     
     static let cellLine = UIColor.init(hexString: "#E8E8E8")
+    static let mainScheme = UIColor.init(hexString: "#329BFF")
+    static let placeholderText = UIColor.init(hexString: "#c2c2c2")
     
     public convenience init(hexString: String) {
         let hexString = hexString.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)

@@ -32,10 +32,15 @@ class ViewController: UIViewController {
         self.tableView.reloadData()
         
         let navBgImage: UIImage? = {
-            let image = UIImage.imageWith(color: UIColor.brown, size: CGSize.init(width: 10, height: 10))
+            let image = UIImage.imageWith(color: UIColor.mainScheme, size: CGSize.init(width: 10, height: 10))
             return image?.resizableImage(withCapInsets: UIEdgeInsets.init(top: 10/2.0, left: 10/2.0, bottom: 10/2.0, right: 10/2.0))
         }()
         self.navigationController?.navigationBar.setBackgroundImage(navBgImage, for: .default)
+        self.navigationController?.navigationBar.titleTextAttributes = [
+            NSForegroundColorAttributeName: UIColor.white,
+            NSFontAttributeName: UIFont.systemFont(ofSize: 17)
+        ]
+        self.navigationController?.navigationBar.tintColor = .white
     }
 
     override func didReceiveMemoryWarning() {
@@ -71,7 +76,7 @@ extension ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         NSLog("didSelectRowAt:\(indexPath.row),\(indexPath.section)")
         let albumListController = AlbumListController.init(collectionViewLayout: UICollectionViewFlowLayout.init())
-        albumListController.rightNavBlock = { [weak albumListController] (albumController, selectedFiles) in
+        albumListController.selectDoneBlock = { [weak albumListController] (albumController, selectedFiles) in
             albumListController?.navigationController?.popViewController(animated: true)
         }
         DispatchQueue.main.async {

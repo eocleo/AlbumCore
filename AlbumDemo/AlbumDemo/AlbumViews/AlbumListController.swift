@@ -17,14 +17,14 @@ private let reuseIdentifier = "AlbumHomeCell"
 class AlbumListController: UICollectionViewController {
 
     //右侧完成按钮
-    var rightNavBlock: AlbumNavItemBlock? {
+    var selectDoneBlock: AlbumNavItemBlock? {
         didSet {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(customView: self.rightCountNavButton)
         }
     }
     
     @objc fileprivate func rightNavAction(_ button: UIButton) {
-        self.rightNavBlock?(self, self.viewModel.selectedFiles)
+        self.selectDoneBlock?(self, self.viewModel.selectedFiles)
     }
     
     // MARK: - 数据源,viewModel
@@ -62,7 +62,7 @@ class AlbumListController: UICollectionViewController {
     fileprivate lazy var rightCountNavButton: UIButton = {
         let button = self.createNavButton(image: nil, title: "完成")
         button.contentHorizontalAlignment = .right
-        button.setTitleColor(UIColor.blue, for: .normal)
+        button.setTitleColor(.white, for: .normal)
         button.addTarget(self, action: #selector(rightNavAction(_:)), for: .touchUpInside)
         return button
     }()
@@ -122,10 +122,15 @@ class AlbumListController: UICollectionViewController {
     // MARK: - 刷新选中个数
     func refreshSelectedCount(_ animation: Bool) -> Void {
         var title = "完成"
+        var countPanText = "请选择文件"
         if self.viewModel.selectedItems.count > 0 {
             title = title.appending("(\(self.viewModel.selectedItems.count))")
+            countPanText = "已选 (\(self.viewModel.selectedItems.count)/\(self.viewModel.maxSelectCount))"
         }
         self.rightCountNavButton.setTitle(title, for: .normal)
+        self.countPanView.doneButton.isEnabled = !(self.viewModel.selectedItems.count == 0)
+        self.countPanView.countLabel.text = countPanText
+        
     }
 
     fileprivate func setupCollectionView() -> Void {
@@ -145,6 +150,17 @@ class AlbumListController: UICollectionViewController {
         return controller
     }()
 
+    fileprivate lazy var countPanView: AlbumSelectCountPanView = {
+        let panView = AlbumSelectCountPanView.createFromXib()
+        panView?.doneCallBack = { [weak self] () in
+            if let weakSelf = self {
+                weakSelf.selectDoneBlock?(weakSelf, weakSelf.viewModel.selectedFiles)
+                weakSelf.navigationController?.popToRootViewController(animated: true)
+            }
+        }
+        return panView ?? AlbumSelectCountPanView()
+    }()
+    
     fileprivate func showDetailController(with myCollection: AlbumCollection) -> Void {
         collectionView?.isUserInteractionEnabled = false
         
@@ -190,6 +206,8 @@ class AlbumListController: UICollectionViewController {
         detailController.needDisableSelectMore = { [weak self] () in
             return self?.viewModel.disableSelectedMore ?? false
         }
+        
+        detailController.footerView = self.countPanView
         
         self.navigationController?.pushViewController(detailController, animated: true)
         collectionView?.isUserInteractionEnabled = true;
