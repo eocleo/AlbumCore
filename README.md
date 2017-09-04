@@ -27,6 +27,6 @@
 iCloud相册中内容获取，有一些小问题，后续补上
 
 ### 演示
-![截图1](https://github.com/eocleo/AlbumCore/blob/master/Introduction/QQ20170824-140737%402x.png) ![截图2](https://github.com/eocleo/AlbumCore/blob/master/Introduction/QQ20170824-140718%402x.png)
+![截图1](https://github.com/eocleo/AlbumCore/blob/master/Introduction/1.jpeg) ![截图2](https://github.com/eocleo/AlbumCore/blob/master/Introduction/2.jpeg) ![截图3](https://github.com/eocleo/AlbumCore/blob/master/Introduction/3.jpeg)
 
 [演示.mp4](https://github.com/eocleo/AlbumCore/blob/master/Introduction/演示.mp4)
