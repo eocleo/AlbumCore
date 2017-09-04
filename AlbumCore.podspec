@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "AlbumCore"
-  s.version      = "0.0.3"
+  s.version      = "0.0.4"
   s.summary      = "基于iOS8以上，Photos封装，简易相册使用库"
 
   # This description is used to generate tags and improve search results.
