@@ -16,6 +16,11 @@
 
 请直接下载demo运行，say is hard，code is easy！
 
+支持pods导入
+```
+  pod 'AlbumCore', '~>0.0.4'
+```
+
 ### 已实现
 
 - 系统相册浏览，多选
