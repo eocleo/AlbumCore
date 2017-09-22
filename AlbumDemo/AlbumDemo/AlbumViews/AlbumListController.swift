@@ -102,7 +102,6 @@ class AlbumListController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         self.title = "自定义相册"
         self.setupCollectionView()
         self.checkAutorizationAndLoadData()

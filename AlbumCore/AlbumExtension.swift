@@ -77,8 +77,7 @@ extension PHAsset {
     
     @discardableResult
     func requestImage(options: PHImageRequestOptions, size: CGSize, block: @escaping ((Dictionary<String, Any>) -> Void)) -> PHImageRequestID {
-        
-        return PHImageManager.default().requestImage(for: self, targetSize: size, contentMode: PHImageContentMode.aspectFill, options: options) { (image, info) in
+        return PHCachingImageManager.default().requestImage(for: self, targetSize: size, contentMode: PHImageContentMode.aspectFill, options: options) { (image, info) in
             var dic:Dictionary<String, Any> = Dictionary.init()
             if let image = image {
                 dic.updateValue(image, forKey: AlbumConstant.ImageKey)
