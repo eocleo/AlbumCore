@@ -229,21 +229,9 @@ class AlbumDetailController: UICollectionViewController {
         
         // Configure the cell
         let asset: PHAsset = (allAsset?.object(at: indexPath.row))!
-        let _ = asset.requestImage(size: CGSize.init(width: 90.0, height: 90.0)) { (dic) in
-            let image: UIImage? = dic[AlbumConstant.ImageKey] as? UIImage
-            runInMain {
-                if cell.localIdentify?.compare(asset.localIdentifier) == .orderedSame {
-                    cell.imageView.image = image
-                    if image == nil && asset.mediaType == .video {
-                        cell.imageView.image = UIImage.init(named: "影片（无格式）")
-                    }
-                } else {
-                    AlbumDebug("\(indexPath.section),\(indexPath.row)")
-                }
-            }
-        }
         cell.localIdentify = asset.localIdentifier
-        
+        //此处设置图片，能提供更加流畅的效果，但部分系统如ios10.3由于cell复用会出现图片错乱，在willDisplay中修正
+        self.setImageFor(cell: cell, for: indexPath)
         if let isSelected = self.hasSelectedAsset?(asset) {
             cell.selectButton.isSelected = isSelected
         }
@@ -256,9 +244,7 @@ class AlbumDetailController: UICollectionViewController {
         
         cell.onClick = { [weak self] (cell: AlbumDetailCollectionViewCell, button) in
             //选中一个按钮
-            
             // indexPath
-            
             guard let index: IndexPath = collectionView.indexPath(for: cell) as IndexPath?  else {
                 return
             }
@@ -271,6 +257,39 @@ class AlbumDetailController: UICollectionViewController {
         return cell
     }
     
+    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let cell = cell as? AlbumDetailCollectionViewCell else {
+            return
+        }
+        guard let asset = allAsset?.object(at: indexPath.row) else {
+            return
+        }
+        //防止图片错乱或者不显示问题
+        if cell.localIdentify != asset.localIdentifier || cell.imageView.image == nil {
+            self.setImageFor(cell: cell, for: indexPath)
+        }
+    }
+    
+    fileprivate let defaultMovieImage = UIImage.init(named: "影片（无格式）")
+
+    fileprivate func setImageFor(cell: AlbumDetailCollectionViewCell, for indexPath: IndexPath) -> Void {
+        guard let asset = allAsset?.object(at: indexPath.row) else {
+            return
+        }
+        let _ = asset.requestImage(size: CGSize.init(width: 90.0, height: 90.0)) { (dic) in
+            let image: UIImage? = dic[AlbumConstant.ImageKey] as? UIImage
+            runInMain {
+                if cell.localIdentify == asset.localIdentifier {
+                    cell.imageView.image = image
+                    if image == nil && asset.mediaType == .video {
+                        cell.imageView.image = self.defaultMovieImage
+                    }
+                } else {
+                    AlbumDebug("\(indexPath.section),\(indexPath.row)")
+                }
+            }
+        }
+    }
 }
 
 extension AlbumDetailController: UICollectionViewDelegateFlowLayout {
